@@ -1,16 +1,16 @@
 /*******************************************************************************************************************************\
-*	@author		Ramil											______     ______     __    __     __     __					*
-*	@date		03-11-2023									   /\  == \   /\  __ \   /\ "-./  \   /\ \   /\ \					*
-*	@brief		This is a library for personal use.			   \ \  __<   \ \  __ \  \ \ \-./\ \  \ \ \  \ \ \____				*
+*	@author		Ramil																																			______     ______     __    __     __     __					*
+*	@date		03-11-2023																								 /\  == \   /\  __ \   /\ "-./  \   /\ \   /\ \					*
+*	@brief		This is a library for personal use.						   \ \  __<   \ \  __ \  \ \ \-./\ \  \ \ \  \ \ \____				*
 *				First of all, I wrote it for myself,			\ \_\ \_\  \ \_\ \_\  \ \_\ \ \_\  \ \_\  \ \_____\				*
 *				so as not to repeat myself many times			 \/_/ /_/   \/_/\/_/   \/_/  \/_/   \/_/   \/_____/				*
-*				and for ease of development.																					*
-*	@version	(beta) under development																						*
-*	@warning	use at your own risk						   ______     ______   ______   __         __     ______			*
-*	@pre		use strictly the C++20 standard			      /\  ___\   /\  == \ /\  == \ /\ \       /\ \   /\  == \			*
-*				and multibyte encoding						  \ \ \____  \ \  _-/ \ \  _-/ \ \ \____  \ \ \  \ \  __<			*
-*	@todo		expand functionality and make				   \ \_____\  \ \_\    \ \_\    \ \_____\  \ \_\  \ \_____\			*
-*				development easier								\/_____/   \/_/     \/_/     \/_____/   \/_/   \/_____/			*
+*				and for ease of development.																							*
+*	@version	(beta) under development																									*
+*	@warning	use at your own risk						   __	____     ______   ______   __         __     ______			*
+*	@pre		use strictly the C++20 standard									    /\  ___\   /\  == \ /\  == \ /\ \       /\ \   /\  == \			*
+*				and multibyte encoding										\ \ \____  \ \  _-/ \ \  _-/ \ \ \____  \ \ \  \ \  __<			*
+*	@todo		expand functionality and make						   \ \_____\  \ \_\    \ \_\    \ \_____\  \ \_\  \ \_____\			*
+*				development easier												\/__		___/   \/_/     \/_/     \/_____/   \/_/   \/_____/			*
 *	@copyright	2023											 																*
 *																  																*
 *																																*
@@ -43,11 +43,6 @@
 #include <comdef.h>
 #include <WbemIdl.h>
 #include <shellapi.h>
-/*
-#include <gdiplus.h>
-#include <gdiplusbitmap.h>
-#include <gdiplusbase.h>
-*/
 
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
@@ -56,14 +51,6 @@
 #pragma warning(disable:4703)
 #pragma comment(lib, "wbemuuid.lib")
 
-// Example testing features
-enum class Error_codes
-{
-	MKDIR_ERROR = 0,
-	FILE_ERROR = 1,
-	INTERNAL_ERROR = 2,
-	FTP_CONNECT_ERROR = 3
-};
 
 namespace cpplib
 {
@@ -311,7 +298,6 @@ namespace cpplib
 	int get_ProcessorName() {
 		HRESULT hres;
 
-		// »нициализаци€ COM библиотеки
 		hres = CoInitializeEx(0, COINIT_MULTITHREADED);
 		if (FAILED(hres))
 		{
@@ -319,7 +305,6 @@ namespace cpplib
 			return 1;
 		}
 
-		// »нициализаци€ провайдера WMI
 		hres = CoInitializeSecurity(
 			NULL,
 			-1,
@@ -337,7 +322,6 @@ namespace cpplib
 			return 1;
 		}
 
-		// ѕолучение указател€ на пространство имен WMI
 		IWbemLocator* pLoc = NULL;
 		hres = CoCreateInstance(
 			CLSID_WbemLocator, 0,
@@ -350,10 +334,9 @@ namespace cpplib
 			return 1;
 		}
 
-		// ѕолучение указател€ на сервис WMI
 		IWbemServices* pSvc = NULL;
 		hres = pLoc->ConnectServer(
-			_bstr_t(L"ROOT\\CIMV2"), // WMI namespace
+			_bstr_t(L"ROOT\\CIMV2"),
 			NULL,
 			NULL,
 			0,
@@ -369,9 +352,8 @@ namespace cpplib
 			return 1;
 		}
 
-		// ”становка безопасности на сервисе WMI
 		hres = CoSetProxyBlanket(
-			pSvc, // указатель на сервис WMI
+			pSvc,
 			RPC_C_AUTHN_WINNT,
 			RPC_C_AUTHZ_NONE,
 			NULL,
@@ -388,7 +370,6 @@ namespace cpplib
 			return 1;
 		}
 
-		// ¬ыполнение запроса WMI дл€ получени€ информации о процессоре
 		IEnumWbemClassObject* pEnumerator = NULL;
 		hres = pSvc->ExecQuery(
 			_bstr_t("WQL"),
@@ -405,7 +386,6 @@ namespace cpplib
 			return 1;
 		}
 
-		// ѕолучение данных из запроса WMI
 		IWbemClassObject* pclsObj = NULL;
 		ULONG uReturn = 0;
 
@@ -439,7 +419,6 @@ namespace cpplib
 		char* ostype = getenv("OSTYPE");
 		if (ostype == NULL)
 		{
-			// не угадали. попробуем, а вдруг это виндовс!?
 			ostype = getenv("windir");
 			if (ostype != NULL)
 			{
@@ -449,7 +428,6 @@ namespace cpplib
 		}
 		else
 		{
-			// переменна€ окружени€ есть, попробуем вызнать что же это такое.
 			if (strcmp(ostype, "linux") == 0) 
 			{
 				os = "Linux";
