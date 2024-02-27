@@ -283,6 +283,16 @@ namespace cpplib
 			return str;
 		}
 
+		void print_current_date_time()
+		{
+			time_t currentTime = time(0);
+			struct tm* localTime = localtime(&currentTime);
+			std::cout << ", date -> " << localTime->tm_year + 1900 << "-" << localTime->tm_mon + 1 << "-" << localTime->tm_mday << " | " << localTime->tm_hour << ":" << localTime->tm_min << ":" << localTime->tm_sec << std::endl;
+			/*
+			output: date -> 2024-2-27 | 15:57:54
+			*/
+		}
+
 		void add_toAutoLoad(std::string Name, std::string Path)
 		{
 			std::string command = "REG ADD \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /V " + Name + " /t REG_SZ /F /D " + Path;
@@ -496,6 +506,7 @@ namespace cpplib
 			DestroyIcon(nid.hIcon);
 
 			/*
+				usage:
 				const wchar_t* title = L"Уведомление";
 				const wchar_t* text = L"Это уведомление с описанием.";
 				const wchar_t* iconPath = L"C:\\Users\\ramil\\Documents\\a.ico";
@@ -503,15 +514,15 @@ namespace cpplib
 			*/
 		}
 
-		void print_current_date_time()
+		std::string get_path_to_executable_file()
 		{
-			time_t currentTime = time(0);
-			struct tm* localTime = localtime(&currentTime);
-			std::cout << ", date -> " << localTime->tm_year + 1900 << "-" << localTime->tm_mon + 1 << "-" << localTime->tm_mday << " | " << localTime->tm_hour << ":" << localTime->tm_min << ":" << localTime->tm_sec << std::endl;
-			/*
-			output: date -> 2024-2-27 | 15:57:54
-			*/
+			char buffer[MAX_PATH];
+			GetModuleFileName(NULL, buffer, MAX_PATH);
+			std::string path(buffer);
+			path = path.substr(0, path.find_last_of("\\"));
+			return path;
 		}
+
 	}
 
 
