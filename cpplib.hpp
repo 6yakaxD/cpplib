@@ -235,7 +235,7 @@ namespace cpplib
 			return GetSystemMetrics(SM_CXSCREEN);
 		}
 
-		int get_screen_height()
+		int	get_screen_height()
 		{
 			return GetSystemMetrics(SM_CYSCREEN);
 		}
@@ -277,7 +277,9 @@ namespace cpplib
 			std::ostringstream oss;
 			oss << std::put_time(&tm, "%d-%m-%Y-%H-%M-%S");
 			auto str = oss.str();
-			/*output: day-month-year-hour-minute-second*/
+			/*output: day-month-year-hour-minute-second
+								27-02-2024-15-57-54
+			*/
 			return str;
 		}
 
@@ -501,11 +503,14 @@ namespace cpplib
 			*/
 		}
 
-		void print_current_time()
+		void print_current_date_time()
 		{
 			time_t currentTime = time(0);
 			struct tm* localTime = localtime(&currentTime);
 			std::cout << ", date -> " << localTime->tm_year + 1900 << "-" << localTime->tm_mon + 1 << "-" << localTime->tm_mday << " | " << localTime->tm_hour << ":" << localTime->tm_min << ":" << localTime->tm_sec << std::endl;
+			/*
+			output: date -> 2024-2-27 | 15:57:54
+			*/
 		}
 	}
 
