@@ -470,23 +470,38 @@ namespace cpplib
 			SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)-1);
 		}
 
-		void SendInformationNotification(const char* title, const char* message) {
-			NOTIFYICONDATA nid = { sizeof(NOTIFYICONDATA) };
-			nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-			nid.hIcon = LoadIcon(NULL, IDI_INFORMATION);
-			nid.uCallbackMessage = WM_USER;
-			lstrcpy(nid.szTip, "Информация");
-			Shell_NotifyIcon(NIM_ADD, &nid);
-			nid.uFlags = NIF_INFO;
-			lstrcpyn(nid.szInfo, message, sizeof(nid.szInfo));
-			lstrcpyn(nid.szInfoTitle, title, sizeof(nid.szInfoTitle));
-			nid.dwInfoFlags = NIIF_INFO;
-			Shell_NotifyIcon(NIM_MODIFY, &nid);
-			Sleep(5000); // Ожидание 5 секунд
-			Shell_NotifyIcon(NIM_DELETE, &nid);
+		void show_windows_notification(const wchar_t* title, const wchar_t* text, const wchar_t* iconPath) {
+			NOTIFYICONDATA nid;
+			ZeroMemory(&nid, sizeof(nid));
+			nid.cbSize = sizeof(nid);
+			nid.hWnd = NULL;
+			nid.uID = 0;
+			nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO | NIF_GUID;
+			nid.uCallbackMessage = WM_USER + 1;
+			nid.hIcon = (HICON)LoadImageW(NULL, iconPath, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
+			wcscpy_s(nid.szTip, _countof(nid.szTip), title);
+			wcscpy_s(nid.szInfo, _countof(nid.szInfo), text);
+			wcscpy_s(nid.szInfoTitle, _countof(nid.szInfoTitle), title);
+			nid.dwInfoFlags = NIF_ICON | NIF_TIP | NIF_INFO;
+			CoCreateGuid(&nid.guidItem);
+
+			Shell_NotifyIconW(NIM_ADD, &nid);
+			Shell_NotifyIconW(NIM_MODIFY, &nid);
+
+			MessageBoxW(NULL, text, title, MB_OK);
+
+			Shell_NotifyIconW(NIM_DELETE, &nid);
+			DestroyIcon(nid.hIcon);
+
+			/*
+				const wchar_t* title = L"Уведомление";
+				const wchar_t* text = L"Это уведомление с описанием.";
+				const wchar_t* iconPath = L"C:\\Users\\ramil\\Documents\\a.ico";
+				showNotification(title, text, iconPath);
+			*/
 		}
 
-		void print_CurrTime()
+		void print_current_time()
 		{
 			time_t currentTime = time(0);
 			struct tm* localTime = localtime(&currentTime);
